@@ -1,0 +1,61 @@
+/* ============================================
+   App.css - Refugio Nazareth
+   Reset base + variables + animaciones
+   ============================================ */
+
+/* ── Variables globales ── */
+:root {
+  --max-width: 1200px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Animaciones globales ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes shine {
+  0%   { transform: translateX(-150%) skewX(-20deg); }
+  25%  { transform: translateX(350%)  skewX(-20deg); }
+  100% { transform: translateX(350%)  skewX(-20deg); }
+}
+
+/* ── Menú responsive hamburguesa ── */
+@media (max-width: 768px) {
+  .nav-desktop     { display: none !important; }
+  .btn-hamburguesa { display: flex !important; }
+}
+
+@media (min-width: 769px) {
+  .nav-mobile      { display: none !important; }
+  .btn-hamburguesa { display: none !important; }
+}

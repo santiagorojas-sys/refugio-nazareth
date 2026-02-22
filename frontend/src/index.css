@@ -1,0 +1,114 @@
+/* ============================================
+   index.css - Refugio Nazareth
+   Reset global + variables
+   ============================================ */
+
+:root {
+  --max-width: 1200px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* ✅ Sin text-rendering optimizeLegibility — causa bug en Edge */
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #f0f4f8;
+  color: #1e293b;
+  /* ✅ Sin display:flex ni place-items — eso rompía el layout */
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Links ── */
+a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+a:hover {
+  color: #1d4ed8;
+}
+
+/* ── Botones reset ── */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  /* ✅ Sin background, border ni border-radius por defecto */
+  /* Cada componente define su propio estilo */
+}
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ── Tipografía base ── */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  font-weight: 700;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Animaciones globales ── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shine {
+  0%   { transform: translateX(-150%) skewX(-20deg); }
+  25%  { transform: translateX(350%)  skewX(-20deg); }
+  100% { transform: translateX(350%)  skewX(-20deg); }
+}
+
+/* ── Menú hamburguesa responsive ── */
+@media (max-width: 768px) {
+  .nav-desktop     { display: none !important; }
+  .btn-hamburguesa { display: flex !important; }
+}
+
+@media (min-width: 769px) {
+  .nav-mobile      { display: none !important; }
+  .btn-hamburguesa { display: none !important; }
+}
+/* Fix renderizado Chrome en textos grandes con overlay */
+.hero-text-fix {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}

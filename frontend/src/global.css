@@ -1,0 +1,50 @@
+:root {
+  --color-fondo: #f0f4f8;
+  --color-primario: #0b1120;
+  --color-secundario: #1d4ed8;
+  --color-acento: #3b82f6;
+  --color-blanco: #ffffff;
+  --max-width: 1200px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--color-fondo);
+  color: #1e293b;
+  line-height: 1.6;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+#root {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+section {
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 { 
+  font-weight: 700; 
+}
