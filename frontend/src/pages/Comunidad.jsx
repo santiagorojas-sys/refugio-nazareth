@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API = 'http://localhost:8000/api';
+const API = 'const API = import.meta.env.VITE_API_URL;';
 const PASSWORD_ADMIN = "piolin";
 
 export default function Comunidad() {
@@ -11,7 +11,7 @@ export default function Comunidad() {
   const [comentarioTexto, setComentarioTexto] = useState('');
   const [nombreComentario, setNombreComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
-
+  const [imagenActiva, setImagenActiva] = useState(0);
   // Form nueva publicación
   const [form, setForm] = useState({
     titulo: '', contenido: '', autor: 'Refugio Nazareth'
@@ -37,15 +37,16 @@ export default function Comunidad() {
     }
   };
 
-  const abrirPublicacion = async (id) => {
-    try {
-      const res = await fetch(`${API}/comunidad/${id}`);
-      const data = await res.json();
-      setPublicacionAbierta(data);
-    } catch (err) {
-      console.error('Error:', err);
-    }
-  };
+const abrirPublicacion = async (id) => {
+  try {
+    const res = await fetch(`${API}/comunidad/${id}`);
+    const data = await res.json();
+    setPublicacionAbierta(data);
+    setImagenActiva(0);
+  } catch (err) {
+    console.error('Error:', err);
+  }
+};
 
   const verificarAdmin = () => {
     const pass = prompt("Contraseña de administrador:");
@@ -129,8 +130,173 @@ export default function Comunidad() {
   const formatFecha = (fecha) => new Date(fecha).toLocaleDateString('es-CO', {
     year: 'numeric', month: 'long', day: 'numeric'
   });
+const getImagenesPublicacion = (pub) => {
+  if (!pub) return [];
+
+  const imagenes = [];
+
+  if (pub.imagen_principal) {
+    imagenes.push(pub.imagen_principal);
+  }
+
+  if (Array.isArray(pub.imagenes_extra) && pub.imagenes_extra.length > 0) {
+    imagenes.push(...pub.imagenes_extra);
+  }
+
+  return imagenes.filter(Boolean);
+};
+
+const getImagenesModal = (pub) => {
+  if (!pub) return [];
+
+  const imagenes = [];
+
+  if (pub.imagen_principal) {
+    imagenes.push(pub.imagen_principal);
+  }
+
+  if (Array.isArray(pub.imagenes_extra) && pub.imagenes_extra.length > 0) {
+    imagenes.push(...pub.imagenes_extra);
+  }
+
+  return imagenes.filter(Boolean);
+};
+const renderCollagePreview = (pub) => {
+  const imagenes = getImagenesPublicacion(pub);
+  if (imagenes.length === 0) return null;
+
+  const visibles = imagenes.slice(0, 4);
+  const restantes = imagenes.length - 4;
+
+  const baseImageStyle = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block'
+  };
+
+  if (imagenes.length === 1) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          aspectRatio: '16 / 9',
+          overflow: 'hidden',
+          background: '#e2e8f0'
+        }}
+      >
+        <img
+          src={buildUrl(imagenes[0])}
+          alt={pub.titulo}
+          style={baseImageStyle}
+        />
+      </div>
+    );
+  }
+
+  if (imagenes.length === 2) {
+    return (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '4px',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          overflow: 'hidden',
+          background: '#e2e8f0'
+        }}
+      >
+        {imagenes.slice(0, 2).map((img, i) => (
+          <div key={i} style={{ overflow: 'hidden' }}>
+            <img
+              src={buildUrl(img)}
+              alt={`${pub.titulo}-${i + 1}`}
+              style={baseImageStyle}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (imagenes.length === 3) {
+    return (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '4px',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          overflow: 'hidden',
+          background: '#e2e8f0'
+        }}
+      >
+        {imagenes.slice(0, 3).map((img, i) => (
+          <div key={i} style={{ overflow: 'hidden' }}>
+            <img
+              src={buildUrl(img)}
+              alt={`${pub.titulo}-${i + 1}`}
+              style={baseImageStyle}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: '1fr 1fr',
+        gap: '4px',
+        width: '100%',
+        aspectRatio: '16 / 9',
+        overflow: 'hidden',
+        background: '#e2e8f0'
+      }}
+    >
+      {visibles.map((img, i) => {
+        const esUltimaVisible = i === 3 && restantes > 0;
+
+        return (
+          <div key={i} style={{ position: 'relative', overflow: 'hidden' }}>
+            <img
+              src={buildUrl(img)}
+              alt={`${pub.titulo}-${i + 1}`}
+              style={baseImageStyle}
+            />
+
+            {esUltimaVisible && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'rgba(15, 23, 42, 0.55)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontWeight: '800',
+                  fontSize: 'clamp(1.1rem, 3vw, 2rem)'
+                }}
+              >
+                +{restantes}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const imagenesModal = getImagenesModal(publicacionAbierta);
+
+return (
     <>
       {/* ── HERO ── */}
       <div style={{
@@ -223,16 +389,16 @@ zIndex: 10,
                   overflow: 'hidden', boxShadow: '0 8px 25px rgba(0,0,0,0.07)',
                   transition: 'all 0.3s'
                 }}>
-                  {/* Imagen principal */}
-                  {pub.imagen_principal && (
-                    <div style={{ height: 'clamp(200px, 40vw, 320px)', overflow: 'hidden' }}>
-                      <img src={buildUrl(pub.imagen_principal)} alt={pub.titulo}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
-                        onMouseEnter={(e) => e.target.style.transform = 'scale(1.04)'}
-                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                      />
-                    </div>
-                  )}
+                  {/* Collage preview */}
+{getImagenesPublicacion(pub).length > 0 && (
+  <div
+    onClick={() => abrirPublicacion(pub.id)}
+    style={{ cursor: 'pointer' }}
+    title="Ver publicación"
+  >
+    {renderCollagePreview(pub)}
+  </div>
+)}
 
                   <div style={{ padding: 'clamp(1.2rem, 3vw, 2rem)' }}>
                     {/* Header */}
@@ -306,15 +472,72 @@ zIndex: 10,
             boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
             marginTop: '1rem', marginBottom: '2rem'
           }}>
-            {/* Imagen principal */}
-            {publicacionAbierta.imagen_principal && (
-              <div style={{ height: 'clamp(200px, 40vw, 300px)', overflow: 'hidden', borderRadius: '20px 20px 0 0' }}>
-                <img src={buildUrl(publicacionAbierta.imagen_principal)}
-                  alt={publicacionAbierta.titulo}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-            )}
+{/* Galería principal del modal */}
+{imagenesModal.length > 0 && (
+  <div style={{
+    padding: '1rem 1rem 0',
+    background: '#fff',
+    borderRadius: '20px 20px 0 0'
+  }}>
+    <div style={{
+      width: '100%',
+      aspectRatio: '16 / 10',
+      background: '#e2e8f0',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      marginBottom: '0.8rem'
+    }}>
+      <img
+        src={buildUrl(imagenesModal[imagenActiva] || imagenesModal[0])}
+        alt={publicacionAbierta.titulo}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          display: 'block',
+          background: '#f8fafc'
+        }}
+      />
+    </div>
 
+    {imagenesModal.length > 1 && (
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(72px, 1fr))',
+        gap: '0.5rem',
+        marginBottom: '0.5rem'
+      }}>
+        {imagenesModal.map((img, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setImagenActiva(i)}
+            style={{
+              border: i === imagenActiva ? '2px solid #2563eb' : '2px solid transparent',
+              padding: 0,
+              borderRadius: '10px',
+              overflow: 'hidden',
+              background: '#e2e8f0',
+              cursor: 'pointer',
+              aspectRatio: '1 / 1'
+            }}
+          >
+            <img
+              src={buildUrl(img)}
+              alt={`${publicacionAbierta.titulo}-${i + 1}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block'
+              }}
+            />
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+)}
             <div style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
               {/* Cerrar */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
@@ -337,20 +560,6 @@ zIndex: 10,
               <p style={{ color: '#475569', lineHeight: 1.9, fontSize: '1.05rem', marginBottom: '1.5rem', whiteSpace: 'pre-wrap' }}>
                 {publicacionAbierta.contenido}
               </p>
-
-              {/* Imágenes extra */}
-              {publicacionAbierta.imagenes_extra?.length > 0 && (
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-                  gap: '0.8rem', marginBottom: '1.5rem'
-                }}>
-                  {publicacionAbierta.imagenes_extra.map((img, i) => (
-                    <img key={i} src={buildUrl(img)} alt={`extra-${i}`}
-                      style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px' }} />
-                  ))}
-                </div>
-              )}
 
               {/* Reacciones */}
               <div style={{ display: 'flex', gap: '0.8rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
